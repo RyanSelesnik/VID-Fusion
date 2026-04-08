@@ -252,8 +252,8 @@ void arrow_show(cv::InputOutputArray src)
     #define pi 3.1415
     #define ZERO 100
     double alpha_angle;//弧度
-         CvScalar line_color;
-	 line_color = CV_RGB(0,0,255);
+         cv::Scalar line_color;
+	 line_color = cv::Scalar(255, 0, 0);
  
 	 cv::Point  pt1 = cvPoint(5,5);//起点
 	 cv::Point  pt2 = cvPoint(5,300); //终点
@@ -272,7 +272,7 @@ void arrow_show(cv::InputOutputArray src)
       if(xx<0 && yy<0) alpha_angle = pi + alpha_angle ;
       if(xx>0 && yy<0) alpha_angle = 2*pi - alpha_angle ;
  
-      CvPoint p;//pt2是箭头的尖角顶点，而p是箭头两边的点。箭头是由p-pt2和pt2-p的两条线段（p赋了两次不同的值，前后不是一个点），以及pt1-pt2构成的。总共是三条线段。
+      cv::Point p;//pt2是箭头的尖角顶点，而p是箭头两边的点。箭头是由p-pt2和pt2-p的两条线段（p赋了两次不同的值，前后不是一个点），以及pt1-pt2构成的。总共是三条线段。
       p.x = (int) (pt2.x + 6 * cos(alpha_angle - pi / 4*3));
       p.y = (int) (pt2.y + 6 * sin(alpha_angle - pi / 4*3));
       cv::line( src, p, pt2, line_color, 1, CV_AA, 0 );//p-pt2线段1
