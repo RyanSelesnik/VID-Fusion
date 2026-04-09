@@ -1,0 +1,95 @@
+%YAML:1.0
+
+# Estimator
+use_vid: 0              # EuRoC has no motor/thrust data — run as VINS-Mono
+
+# topic names
+imu_topic: "/imu0"
+image_topic: "/cam0/image_raw"
+control_topic: "/none"  # unused when use_vid: 0
+
+# paths to store results
+output_path: "/tmp/vid_out"
+
+# camera calibration — EuRoC cam0 (Aptina MT9V034, fisheye off)
+model_type: PINHOLE
+camera_name: camera
+image_width: 752
+image_height: 480
+distortion_parameters:
+   k1: -0.28340811
+   k2:  0.07395907
+   p1:  0.00019359
+   p2:  1.76187114e-05
+projection_parameters:
+   fx: 458.654
+   fy: 457.296
+   cx: 367.215
+   cy: 248.375
+
+# Extrinsic: imu^T_cam0 and imu^R_cam0 from EuRoC ground truth
+estimate_extrinsic: 0
+extrinsicRotation: !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [ 0.0148655429818,  -0.999880929698,   0.00414029679422,
+           0.999557249008,    0.0149672133247,   0.025715529948,
+          -0.0257744366974,   0.00375618835797,  0.999660727178]
+extrinsicTranslation: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [-0.0216401454975, -0.064676986768, 0.00981073058949]
+
+# feature tracker parameters
+max_cnt: 150
+min_dist: 30
+freq: 10
+F_threshold: 1.0
+show_track: 1
+equalize: 1
+fisheye: 0
+
+# optimization parameters
+max_solver_time: 0.04
+max_num_iterations: 8
+keyframe_parallax: 10.0
+
+# IMU noise — EuRoC IMU (ADIS16448)
+acc_n: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [0.08, 0.08, 0.08]
+gyr_n:  0.004
+acc_w:  0.00004
+gyr_w:  0.000002
+g_norm: 9.81
+
+# dynamics (unused, use_vid: 0)
+control_thrust_z_n: 0.5
+control_thrust_x_y_n: 0.5
+scale_thrust_input: 1
+force_wo_rotor_drag: 0
+k_d_x: 0.33
+k_d_y: 0.33
+
+# loop closure
+loop_closure: 0
+load_previous_pose_graph: 0
+fast_relocalization: 0
+pose_graph_save_path: "/tmp/vid_out/pose_graph/"
+
+# time offset
+estimate_td: 1
+td: 0.0
+
+# rolling shutter
+rolling_shutter: 0
+rolling_shutter_tr: 0
+
+# visualization
+save_image: 0
+visualize_imu_forward: 0
+visualize_camera_size: 0.4

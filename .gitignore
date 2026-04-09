@@ -1,2 +1,6 @@
 *.json
 *.vscode
+data/*.bag
+data/*.zip
+data/**/*.bag
+data/**/*.zip
