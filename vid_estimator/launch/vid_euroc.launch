@@ -22,8 +22,9 @@
         <param name="skip_dis" type="double" value="0" />
     </node>
 
+    <!-- required=true shuts down the whole launch when the bag finishes -->
     <node name="rosbag_play" pkg="rosbag" type="play" output="screen"
-          args="--clock -r $(arg bag_rate) $(arg bag)" />
+          required="true" args="--clock -r $(arg bag_rate) $(arg bag)" />
 
     <include file="$(find ego_planner)/launch/foxglove_bridge.launch" />
 </launch>
