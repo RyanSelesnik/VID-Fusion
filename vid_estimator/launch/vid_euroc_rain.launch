@@ -1,0 +1,70 @@
+<launch>
+  <!-- VID-Fusion EuRoC with correlated rain noise (streaks + lens drops + haze)
+       between the bag and the feature_tracker / vid_estimator. -->
+
+  <arg name="config_path" default="$(find feature_tracker)/../config/euroc/euroc_config.yaml" />
+  <arg name="vins_path"   default="$(find feature_tracker)/../config/../" />
+  <arg name="bag"         default="/catkin_ws/src/realflight_modules/VID-Fusion/data/machine_hall/MH_01_easy/MH_01_easy.bag" />
+  <arg name="bag_rate"    default="0.5" />
+  <arg name="intensity"   default="0.0" />
+  <arg name="seed"        default="0" />
+  <arg name="rain_term_vel"    default="8.0" />
+  <arg name="gt_csv"           default="/catkin_ws/src/realflight_modules/VID-Fusion/data/machine_hall/MH_01_easy/groundtruth/data.csv" />
+  <arg name="lens_drop_count"  default="8" />
+  <arg name="lens_drop_rmin"   default="6" />
+  <arg name="lens_drop_rmax"   default="20" />
+  <arg name="lens_drop_blur"   default="4.0" />
+  <arg name="lens_slide_pxs"   default="15.0" />
+  <arg name="rain_rate_density" default="150" />
+  <arg name="haze"             default="0.15" />
+  <arg name="drop_growth_pxs"  default="0.0" />
+  <arg name="drop_spawn_rate"  default="0.0" />
+  <arg name="drop_max_count"   default="60" />
+  <arg name="drop_merge"       default="true" />
+
+  <node name="rain_noise_relay" pkg="gazebo_viz" type="rain_noise_relay.py"
+        output="screen" required="true">
+    <param name="intensity" value="$(arg intensity)" />
+    <param name="seed"      value="$(arg seed)" />
+    <param name="rain_term_vel" value="$(arg rain_term_vel)" />
+    <param name="gt_csv"    value="$(arg gt_csv)" />
+    <param name="in"        value="/raw/cam0/image_raw" />
+    <param name="out"       value="/cam0/image_raw" />
+    <param name="lens_drop_count"  value="$(arg lens_drop_count)" />
+    <param name="lens_drop_rmin"   value="$(arg lens_drop_rmin)" />
+    <param name="lens_drop_rmax"   value="$(arg lens_drop_rmax)" />
+    <param name="lens_drop_blur"   value="$(arg lens_drop_blur)" />
+    <param name="lens_slide_pxs"   value="$(arg lens_slide_pxs)" />
+    <param name="rain_rate_density" value="$(arg rain_rate_density)" />
+    <param name="haze"             value="$(arg haze)" />
+    <param name="drop_growth_pxs"  value="$(arg drop_growth_pxs)" />
+    <param name="drop_spawn_rate"  value="$(arg drop_spawn_rate)" />
+    <param name="drop_max_count"   value="$(arg drop_max_count)" />
+    <param name="drop_merge"       value="$(arg drop_merge)" />
+  </node>
+
+  <node name="feature_tracker" pkg="feature_tracker" type="feature_tracker" output="log">
+    <param name="config_file" type="string" value="$(arg config_path)" />
+    <param name="vins_folder" type="string" value="$(arg vins_path)" />
+  </node>
+
+  <node name="vid_estimator" pkg="vid_estimator" type="vid_estimator" output="screen">
+    <param name="config_file" type="string" value="$(arg config_path)" />
+    <param name="vins_folder" type="string" value="$(arg vins_path)" />
+  </node>
+
+  <node name="pose_graph" pkg="pose_graph" type="pose_graph" output="screen">
+    <param name="config_file" type="string" value="$(arg config_path)" />
+    <param name="visualization_shift_x" type="int" value="0" />
+    <param name="visualization_shift_y" type="int" value="0" />
+    <param name="skip_cnt" type="int" value="0" />
+    <param name="skip_dis" type="double" value="0" />
+  </node>
+
+  <node name="rosbag_play" pkg="rosbag" type="play" output="screen"
+        required="true"
+        args="--clock -r $(arg bag_rate) $(arg bag)
+              /cam0/image_raw:=/raw/cam0/image_raw" />
+
+  <include file="$(find ego_planner)/launch/foxglove_bridge.launch" />
+</launch>

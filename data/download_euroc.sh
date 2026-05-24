@@ -34,7 +34,7 @@ fi
 # Download ZIP if not already present
 if [ ! -f "$ZIP" ]; then
   echo "Downloading Machine Hall ZIP (~12 GB)..."
-  curl -L --progress-bar -o "$ZIP" "$MACHINE_HALL_URL"
+  curl -L -H "Accept: application/octet-stream" --progress-bar -o "$ZIP" "$MACHINE_HALL_URL"
 else
   echo "Found existing $ZIP, skipping download."
 fi
